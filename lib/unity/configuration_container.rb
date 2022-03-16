@@ -23,6 +23,9 @@ module Unity
         @configurations_container[path] ||= \
           case type
           when :yaml, :yml then YAML.load_file(path)
+          when :json then JSON.load(File.new(path))
+          else
+            raise Error, "File type '#{type}' not supported"
           end
       end
     end
