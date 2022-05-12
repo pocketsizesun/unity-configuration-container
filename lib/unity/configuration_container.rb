@@ -7,26 +7,26 @@ module Unity
     class Error < StandardError; end
 
     def self.extended(base)
-      base.instance_variable_set(:@configurations_container, {})
-      base.instance_variable_set(:@configurations_container_mutex, Mutex.new)
+      base.instance_variable_set(:@unity_configuration_values, {})
+      base.instance_variable_set(:@unity_configurations, {})
+      base.instance_variable_set(:@unity_configuration_mutex, Mutex.new)
     end
 
     def configurations_container
       @configurations_container
     end
 
-    def configuration_for(type, path)
-      config = @configurations_container[path]
+    def configuration(name, lazy: false, &block)
+      @unity_configurations[name] = block
+      configuration_for(name) if lazy == false
+    end
+
+    def configuration_for(name)
+      config = @unity_configuration_values[name]
       return config unless config.nil?
 
-      @configurations_container_mutex.synchronize do
-        @configurations_container[path] ||= \
-          case type
-          when :yaml, :yml then YAML.load_file(path)
-          when :json then JSON.load(File.new(path))
-          else
-            raise Error, "File type '#{type}' not supported"
-          end
+      @unity_configuration_mutex.synchronize do
+        @unity_configuration_values[name] ||= @unity_configurations[name].call
       end
     end
   end

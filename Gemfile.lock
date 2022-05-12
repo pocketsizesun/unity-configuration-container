@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    unity-configuration-container (1.0.0)
+    unity-configuration-container (1.1.0)
 
 GEM
   remote: https://rubygems.org/
@@ -9,6 +9,7 @@ GEM
     rake (13.0.6)
 
 PLATFORMS
+  arm64-darwin-21
   x86_64-darwin-20
 
 DEPENDENCIES
